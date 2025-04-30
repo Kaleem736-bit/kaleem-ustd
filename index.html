@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام محفظة TRX المتكاملة - النسخة الكاملة</title>
+    <title>محفظة TRX المتكاملة - النسخة الكاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -241,34 +241,30 @@
             font-size: 14px;
         }
 
-        .market-trend.up {
+        .trend-up {
             color: var(--success);
         }
 
-        .market-trend.down {
+        .trend-down {
             color: var(--danger);
         }
 
-        .notification-item {
+        .asset-details {
             background: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: var(--radius);
-            margin-bottom: 10px;
+            margin-top: 15px;
+        }
+
+        .chart-placeholder {
+            height: 150px;
+            background: #f5f5f5;
+            border-radius: var(--radius);
+            margin: 15px 0;
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .notification-icon {
-            font-size: 20px;
-        }
-
-        .notification-icon.received {
-            color: var(--success);
-        }
-
-        .notification-icon.sent {
-            color: var(--danger);
+            justify-content: center;
+            color: #666;
         }
     </style>
 </head>
@@ -284,7 +280,7 @@
     </div>
 
     <!-- صفحة تسجيل الدخول -->
-    <div class="container page active" id="loginPage">
+    <div class="container page" id="loginPage">
         <div class="card">
             <h2 style="text-align: center; margin-bottom: 20px;">تسجيل الدخول</h2>
             <input type="text" class="input-field" placeholder="البريد الإلكتروني أو رقم الهاتف" id="loginId">
@@ -354,11 +350,11 @@
                 <option value="TRX">TRX</option>
                 <option value="USDT">USDT</option>
                 <option value="USDD">USDD</option>
-                <option value="BTC">Bitcoin</option>
-                <option value="ETH">Ethereum</option>
+                <option value="BTC">Bitcoin (BTC)</option>
+                <option value="ETH">Ethereum (ETH)</option>
                 <option value="BNB">BNB</option>
                 <option value="XRP">XRP</option>
-                <option value="DOGE">Dogecoin</option>
+                <option value="DOGE">Dogecoin (DOGE)</option>
             </select>
             <input type="text" class="input-field" placeholder="عنوان المحفظة المستقبلة" id="receiverAddress">
             <input type="number" class="input-field" placeholder="المبلغ" id="sendAmount">
@@ -437,22 +433,49 @@
     <!-- صفحة الـ Stake -->
     <div class="container page" id="stakePage">
         <div class="card">
-            <h2 style="text-align: center;">نظام Staking</h2>
-            <div class="asset-list">
-                <div class="asset-item">
-                    <div>TRX Staking</div>
-                    <button class="btn btn-primary" onclick="stakeTRX()">Stake TRX</button>
-                </div>
-                <div class="asset-item">
-                    <div>USDT Staking</div>
-                    <button class="btn btn-success" onclick="stakeUSDT()">Stake USDT</button>
-                </div>
+            <h2 style="text-align: center;">Stake TRX</h2>
+            <div class="stat-item">
+                <small>TRX المتاحة للـ Stake</small>
+                <h3 id="availableForStake">0</h3>
             </div>
+            <input type="number" class="input-field" placeholder="المبلغ المراد Stake" id="stakeAmount">
+            <button class="btn btn-primary" onclick="stakeTRX()">Stake الآن</button>
             <div style="margin-top: 20px;">
-                <h4>رصيد الـ Stake</h4>
-                <div class="asset-list" id="stakedAssets"></div>
+                <h4 style="margin-bottom: 10px;">سجل الـ Stake</h4>
+                <div id="stakeHistory"></div>
             </div>
             <p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showPage('walletPage')">رجوع</p>
+        </div>
+    </div>
+
+    <!-- صفحة تفاصيل الأصل -->
+    <div class="container page" id="assetDetailPage">
+        <div class="card">
+            <h2 style="text-align: center;" id="assetTitle">تفاصيل الأصل</h2>
+            <div class="asset-details">
+                <div style="display: flex; justify-content: space-between;">
+                    <h3 id="assetName"></h3>
+                    <h3 id="assetBalance"></h3>
+                </div>
+                <div class="chart-placeholder">
+                    رسم بياني لسعر الأصل (حقيقي عند التطبيق)
+                </div>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <small>السعر الحالي</small>
+                        <h3 id="assetPrice"></h3>
+                    </div>
+                    <div class="stat-item">
+                        <small>التغير (24h)</small>
+                        <h3 id="assetChange"></h3>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="showPage('sendPage')">إرسال</button>
+                    <button class="btn btn-success" onclick="showPage('receivePage')">استلام</button>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showPage('walletPage')">رجوع للمحفظة</p>
         </div>
     </div>
 
@@ -490,7 +513,9 @@
                         <th>التاريخ</th>
                     </tr>
                 </thead>
-                <tbody id="adminTransactionsList"></tbody>
+                <tbody id="adminTransactionsList">
+                    <!-- يتم ملؤها بالجافاسكريبت -->
+                </tbody>
             </table>
 
             <h3 style="margin: 20px 0 10px;">إرسال أموال كمسؤول</h3>
@@ -498,11 +523,11 @@
                 <option value="TRX">TRX</option>
                 <option value="USDT">USDT</option>
                 <option value="USDD">USDD</option>
-                <option value="BTC">Bitcoin</option>
-                <option value="ETH">Ethereum</option>
+                <option value="BTC">Bitcoin (BTC)</option>
+                <option value="ETH">Ethereum (ETH)</option>
                 <option value="BNB">BNB</option>
                 <option value="XRP">XRP</option>
-                <option value="DOGE">Dogecoin</option>
+                <option value="DOGE">Dogecoin (DOGE)</option>
             </select>
             <input type="text" class="input-field" placeholder="عنوان المحفظة المستقبلة" id="adminReceiver">
             <input type="number" class="input-field" placeholder="المبلغ" id="adminAmount">
@@ -518,7 +543,9 @@
                         <th>إجراءات</th>
                     </tr>
                 </thead>
-                <tbody id="adminUsersList"></tbody>
+                <tbody id="usersList">
+                    <!-- يتم ملؤها بالجافاسكريبت -->
+                </tbody>
             </table>
 
             <button class="btn btn-danger" style="margin-top: 20px;" onclick="logoutAdmin()">تسجيل خروج المسؤول</button>
@@ -534,23 +561,16 @@
     </div>
 
     <script>
-        // بيانات النظام
-        let currentUser = null;
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-        let stakings = JSON.parse(localStorage.getItem('stakings')) || [];
-        let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
-        
-        // بيانات ��لعملات
+        // بيانات العملات مع أسعار وتغيرات
         const currencies = {
-            TRX: { name: "TRON", price: 0.07, change: getRandomChange(), balance: 10000 },
-            USDT: { name: "Tether", price: 1.00, change: getRandomChange(), balance: 10000 },
-            USDD: { name: "USDD", price: 1.00, change: getRandomChange(), balance: 10000 },
-            BTC: { name: "Bitcoin", price: 37000, change: getRandomChange(), balance: 10000 },
-            ETH: { name: "Ethereum", price: 2000, change: getRandomChange(), balance: 10000 },
-            BNB: { name: "BNB", price: 250, change: getRandomChange(), balance: 10000 },
-            XRP: { name: "XRP", price: 0.6, change: getRandomChange(), balance: 10000 },
-            DOGE: { name: "Dogecoin", price: 0.08, change: getRandomChange(), balance: 10000 }
+            TRX: { name: "TRON", price: 0.07, change: 1.5, balance: 10000 },
+            USDT: { name: "Tether", price: 1.00, change: 0.1, balance: 10000 },
+            USDD: { name: "USDD", price: 1.00, change: -0.2, balance: 10000 },
+            BTC: { name: "Bitcoin", price: 37000, change: 2.3, balance: 10000 },
+            ETH: { name: "Ethereum", price: 2000, change: 1.8, balance: 10000 },
+            BNB: { name: "BNB", price: 250, change: -0.5, balance: 10000 },
+            XRP: { name: "XRP", price: 0.6, change: 3.2, balance: 10000 },
+            DOGE: { name: "Dogecoin", price: 0.08, change: -1.2, balance: 10000 }
         };
 
         // بيانات المرشحين للتصويت
@@ -561,18 +581,17 @@
             { id: 4, name: 'Super Representative 4', votes: 0 }
         ];
 
-        // توليد تغير عشوائي للأسعار
-        function getRandomChange() {
-            return (Math.random() * 10 - 5).toFixed(2);
-        }
+        // بيانات الـ Stake
+        const stakeData = [
+            { id: 1, amount: 500, date: '2023-05-15', reward: 5 },
+            { id: 2, amount: 1000, date: '2023-06-20', reward: 10 }
+        ];
 
-        // تحديث تغيرات الأسعار كل 10 ثواني
-        setInterval(() => {
-            Object.keys(currencies).forEach(currency => {
-                currencies[currency].change = getRandomChange();
-            });
-            if(currentUser) updateAssetsList();
-        }, 10000);
+        // بيانات النظام
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let currentAsset = null;
 
         // إدارة الصفحات
         function showPage(pageId) {
@@ -580,12 +599,14 @@
             document.getElementById(pageId).classList.add('active');
             updateNavTabs(pageId);
             
+            // تحديث الصفحة عند العرض
             if(pageId === 'walletPage') updateWalletDisplay();
             if(pageId === 'transactionsPage') loadTransactions();
             if(pageId === 'profilePage') updateProfile();
             if(pageId === 'votePage') loadCandidates();
-            if(pageId === 'stakePage') loadStakedAssets();
+            if(pageId === 'stakePage') loadStakeData();
             if(pageId === 'adminPage') updateAdminDashboard();
+            if(pageId === 'assetDetailPage') updateAssetDetails();
         }
 
         function updateNavTabs(activePage) {
@@ -607,8 +628,15 @@
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
-            if(password !== confirmPassword) return alert("كلمات المرور غير متطابقة!");
-            if(users.some(u => u.email === email)) return alert("البريد الإلكتروني مسجل بالفعل!");
+            if(password !== confirmPassword) {
+                alert("كلمات المرور غير متطابقة!");
+                return;
+            }
+
+            if(users.some(u => u.email === email)) {
+                alert("البريد الإلكتروني مسجل بالفعل!");
+                return;
+            }
 
             const user = {
                 id: Date.now(),
@@ -622,7 +650,7 @@
                 bandwidth: 500,
                 transactions: [],
                 notifications: [],
-                staked: {}
+                stake: 0
             };
 
             users.push(user);
@@ -657,21 +685,19 @@
 
         // نظام المحفظة
         function updateWalletDisplay() {
+            if(!currentUser) return;
+            
             document.getElementById('userName').textContent = currentUser.name;
             document.getElementById('walletAddress').textContent = currentUser.walletAddress;
-            document.getElementById('balanceTRX').textContent = `${currentUser.balance.TRX || 0} TRX`;
-            document.getElementById('balanceUSD').textContent = `$${((currentUser.balance.TRX || 0) * currencies.TRX.price).toFixed(2)}`;
+            document.getElementById('balanceTRX').textContent = `${currentUser.balance.TRX} TRX`;
+            document.getElementById('balanceUSD').textContent = `$${(currentUser.balance.TRX * currencies.TRX.price).toFixed(2)}`;
             document.getElementById('receiveAddress').textContent = currentUser.walletAddress;
-            document.getElementById('energyValue').textContent = currentUser.energy || 0;
-            document.getElementById('bandwidthValue').textContent = currentUser.bandwidth || 0;
+            document.getElementById('energyValue').textContent = currentUser.energy;
+            document.getElementById('bandwidthValue').textContent = currentUser.bandwidth;
             
-            updateAssetsList();
-        }
-
-        function updateAssetsList() {
+            // تحديث قائمة الأصول
             const assetsList = document.getElementById('assetsList');
             assetsList.innerHTML = '';
-            
             Object.entries(currentUser.balance).forEach(([currency, balance]) => {
                 if(balance > 0 && currencies[currency]) {
                     const change = currencies[currency].change;
@@ -679,15 +705,15 @@
                     const changeIcon = change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
                     
                     assetsList.innerHTML += `
-                        <div class="asset-item" onclick="showAssetDetails('${currency}')">
+                        <div class="asset-item" onclick="showAssetDetail('${currency}')">
                             <div>
                                 ${currency} - ${currencies[currency].name}
-                                <div class="market-trend ${changeClass}">
+                                <div class="price-change ${changeClass}">
                                     <i class="fas ${changeIcon}"></i> ${Math.abs(change)}%
                                 </div>
                             </div>
                             <div>
-                                ${balance.toFixed(6)}
+                                ${balance}
                                 <div class="price-change">
                                     $${(balance * currencies[currency].price).toFixed(2)}
                                 </div>
@@ -698,23 +724,41 @@
             });
         }
 
+        function showAssetDetail(currency) {
+            currentAsset = currency;
+            showPage('assetDetailPage');
+        }
+
+        function updateAssetDetails() {
+            if(!currentAsset || !currentUser) return;
+            
+            const asset = currencies[currentAsset];
+            document.getElementById('assetTitle').textContent = `تفاصيل ${asset.name}`;
+            document.getElementById('assetName').textContent = asset.name;
+            document.getElementById('assetBalance').textContent = `${currentUser.balance[currentAsset] || 0} ${currentAsset}`;
+            document.getElementById('assetPrice').textContent = `$${asset.price}`;
+            
+            const changeElement = document.getElementById('assetChange');
+            changeElement.textContent = `${asset.change > 0 ? '+' : ''}${asset.change}%`;
+            changeElement.className = asset.change >= 0 ? 'up' : 'down';
+        }
+
         // نظام التحويلات
-        function sendFunds() {
+        async function sendFunds() {
             const receiverAddress = document.getElementById('receiverAddress').value;
             const amount = parseFloat(document.getElementById('sendAmount').value);
             const currency = document.getElementById('sendCurrency').value;
 
-            if(!receiverAddress || !amount) return alert("الرجاء ملء جميع الحقول");
-            if(amount <= 0) return alert("المبلغ يجب أن يكون أكبر من الصفر");
+            if(!receiverAddress || !amount) return alert('الرجاء ملء جميع الحقول');
 
             const receiver = users.find(u => u.walletAddress === receiverAddress);
-            if(!receiver) return alert("عنوان المحفظة غير صحيح");
-            if(!currentUser.balance[currency] || currentUser.balance[currency] < amount) return alert("الرصيد غير كافي");
+            
+            if(!receiver) return alert('عنوان المحفظة غير صحيح');
+            if(currentUser.balance[currency] < amount) return alert('الرصيد غير كافي');
 
             // إجراء التحويل
             currentUser.balance[currency] -= amount;
-            if(!receiver.balance[currency]) receiver.balance[currency] = 0;
-            receiver.balance[currency] += amount;
+            receiver.balance[currency] = (receiver.balance[currency] || 0) + amount;
 
             // تسجيل المعاملة
             const transaction = {
@@ -738,17 +782,16 @@
             // حفظ التحديثات
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('transactions', JSON.stringify(transactions));
-            localStorage.setItem('notifications', JSON.stringify(notifications));
             
             alert(`تم إرسال ${amount} ${currency} بنجاح!`);
             showPage('walletPage');
             updateWalletDisplay();
+            loadTransactions();
         }
 
         function createNotification(user, type, amount, currency, address) {
             const notification = {
                 id: Date.now(),
-                userId: user.id,
                 type,
                 amount,
                 currency,
@@ -756,8 +799,8 @@
                 date: new Date().toISOString(),
                 read: false
             };
-            notifications.push(notification);
-            user.notifications.push(notification.id);
+            user.notifications = user.notifications || [];
+            user.notifications.unshift(notification);
         }
 
         // نظام المعاملات
@@ -770,20 +813,14 @@
                 (filter === 'all' || 
                 (filter === 'sent' && t.from === currentUser.walletAddress) ||
                 (filter === 'received' && t.to === currentUser.walletAddress))
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            if(userTransactions.length === 0) {
-                container.innerHTML = '<p style="text-align: center;">لا توجد معاملات</p>';
-                return;
-            }
+            );
 
             userTransactions.forEach(t => {
                 const isSent = t.from === currentUser.walletAddress;
                 container.innerHTML += `
                     <div class="transaction-item">
                         <div>
-                            <i class="fas fa-${isSent ? 'arrow-up' : 'arrow-down'}" 
-                               style="color: ${isSent ? 'var(--danger)' : 'var(--success)'}"></i>
+                            <i class="fas fa-${isSent ? 'arrow-up' : 'arrow-down'}"></i>
                             ${isSent ? 'إرسال إلى' : 'استلام من'}
                             <br>
                             <small>${new Date(t.date).toLocaleString()}</small>
@@ -805,7 +842,7 @@
             const list = document.getElementById('candidatesList');
             list.innerHTML = candidates.map(candidate => `
                 <div class="vote-item">
-                    <div>${candidate.name} (${candidate.votes} أصوات)</div>
+                    <div>${candidate.name}</div>
                     <button class="btn btn-primary" onclick="voteForCandidate(${candidate.id})">
                         تصويت (10 TRX)
                     </button>
@@ -817,94 +854,51 @@
             if(currentUser.balance.TRX < 10) return alert('تحتاج إلى 10 TRX على الأقل للتصويت');
             
             currentUser.balance.TRX -= 10;
-            const candidate = candidates.find(c => c.id === candidateId);
-            candidate.votes++;
-            
-            // تسجيل المعاملة
-            const transaction = {
-                id: Date.now(),
-                from: currentUser.walletAddress,
-                to: "SYSTEM_VOTE",
-                amount: 10,
-                currency: "TRX",
-                date: new Date().toISOString(),
-                status: 'مكتمل'
-            };
-            
-            transactions.push(transaction);
-            currentUser.transactions.push(transaction.id);
-            
+            candidates.find(c => c.id === candidateId).votes++;
             localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-            
             updateWalletDisplay();
-            loadCandidates();
             alert('تم التصويت بنجاح!');
         }
 
-        // نظام Staking
-        function loadStakedAssets() {
-            const container = document.getElementById('stakedAssets');
-            container.innerHTML = '';
+        // نظام الـ Stake
+        function loadStakeData() {
+            document.getElementById('availableForStake').textContent = currentUser.balance.TRX;
+            const history = document.getElementById('stakeHistory');
+            history.innerHTML = '';
             
-            if(!currentUser.staked || Object.keys(currentUser.staked).length === 0) {
-                container.innerHTML = '<p style="text-align: center;">لا توجد أصول مخزنة</p>';
-                return;
-            }
-            
-            Object.entries(currentUser.staked).forEach(([currency, amount]) => {
-                container.innerHTML += `
-                    <div class="asset-item">
-                        <div>${currency}</div>
-                        <div>${amount}</div>
+            stakeData.forEach(stake => {
+                history.innerHTML += `
+                    <div class="transaction-item">
+                        <div>
+                            <i class="fas fa-lock"></i>
+                            ${stake.amount} TRX
+                            <br>
+                            <small>${stake.date}</small>
+                        </div>
+                        <div style="color: var(--success)">
+                            +${stake.reward} TRX
+                        </div>
                     </div>
                 `;
             });
         }
 
         function stakeTRX() {
-            const amount = parseFloat(prompt("كمية TRX التي تريد تخزينها:", "100"));
-            if(!amount || isNaN(amount) return;
-            if(currentUser.balance.TRX < amount) return alert("الرصيد غير كافي");
+            const amount = parseFloat(document.getElementById('stakeAmount').value);
+            
+            if(!amount || amount <= 0) return alert('الرجاء إدخال مبلغ صحيح');
+            if(currentUser.balance.TRX < amount) return alert('الرصيد غير كافي');
             
             currentUser.balance.TRX -= amount;
-            if(!currentUser.staked.TRX) currentUser.staked.TRX = 0;
-            currentUser.staked.TRX += amount;
+            currentUser.stake += amount;
             
-            localStorage.setItem('users', JSON.stringify(users));
-            updateWalletDisplay();
-            loadStakedAssets();
-            alert(`تم تخزين ${amount} TRX بنجاح!`);
-        }
-
-        function stakeUSDT() {
-            const amount = parseFloat(prompt("كمية USDT التي تريد تخزينها:", "100"));
-            if(!amount || isNaN(amount)) return;
-            if(currentUser.balance.USDT < amount) return alert("الرصيد غير كافي");
+            // تسجيل معاملة الـ Stake
+            const stake = {
+                id: Date.now(),
+                amount,
+                date: new Date().toISOString().split('T')[0],
+                reward: amount * 0.01
+            };
             
-            currentUser.balance.USDT -= amount;
-            if(!currentUser.staked.USDT) currentUser.staked.USDT = 0;
-            currentUser.staked.USDT += amount;
-            
-            localStorage.setItem('users', JSON.stringify(users));
-            updateWalletDisplay();
-            loadStakedAssets();
-            alert(`تم تخزين ${amount} USDT بنجاح!`);
-        }
-
-        // تحديث الملف الشخصي
-        function updateProfile() {
-            document.getElementById('profileName').textContent = currentUser.name;
-            document.getElementById('profileEmail').textContent = currentUser.email;
-            document.getElementById('profilePhone').textContent = currentUser.phone;
-            document.getElementById('profileWallet').textContent = currentUser.walletAddress;
-            
-            const totalSent = transactions
-                .filter(t => t.from === currentUser.walletAddress)
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            const totalReceived = transactions
-                .filter(t => t.to === currentUser.walletAddress)
-                .reduce((sum, t) => sum + t.amount, 0);
-
-            document.getElementById('totalSent').textContent = totalSent.toFixed
+            stakeData.push(stake);
+            localStorage.setItem('users', JSON.stringify
