@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المحفظة الإلكترونية</title>
     <style>
-        /* تنسيق الصفحة بشكل موحد */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -14,67 +14,84 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden;
         }
+
         .container {
             background-color: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             width: 350px;
-            transition: transform 0.3s ease-in-out;
         }
+
         h2 {
             text-align: center;
             margin-bottom: 20px;
         }
-        input, button {
+
+        input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 8px 0;
-            border-radius: 50px;
+            border-radius: 25px;
             border: 1px solid #ddd;
         }
+
         button {
+            width: 100%;
+            padding: 12px;
             background-color: #4CAF50;
             color: white;
+            border: none;
+            border-radius: 25px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #45a049;
         }
+
         #successMessage {
             text-align: center;
             color: green;
-            display: none;
         }
+
         a {
             display: block;
             text-align: center;
             margin-top: 10px;
             color: #4CAF50;
         }
+
         a:hover {
             text-decoration: underline;
         }
+
+        /* واجهة المحفظة */
         .wallet-info {
             margin-bottom: 20px;
         }
+
         .wallet-info span {
             font-weight: bold;
         }
+
         .action-buttons {
             display: flex;
             justify-content: space-between;
         }
+
         .action-buttons button {
             width: 48%;
         }
+
+        /* أسلوب تحكم الشريط السفلي */
         .tabs {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
         }
+
         .tabs button {
             padding: 10px;
             width: 20%;
@@ -83,81 +100,41 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .tabs button:hover {
             background-color: #ddd;
         }
-
-        /* تنسيق خاص للمحفظة */
-        .tab-content {
-            display: none;
-        }
-
-        .active-tab {
-            display: block;
-        }
-
-        .transaction-list {
-            margin-top: 20px;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
-
-        .transaction-item {
-            margin-bottom: 15px;
-        }
-
-        .transaction-item span {
-            font-size: 14px;
-            color: #333;
-        }
-
-        /* التنسيق الدائري لجميع الخانات */
-        input, button {
-            border-radius: 50px;
-        }
-
-        /* تأثيرات حركية للتنقل بين الواجهات */
-        .fade {
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
     </style>
 </head>
-<body>
-    <div class="container fade" id="container">
-        <h2 id="pageTitle">تسجيل حساب جديد</h2>
 
+<body>
+    <div class="container" id="container">
+        <h2 id="pageTitle">تسجيل حساب جديد</h2>
+        <!-- نموذج التسجيل -->
         <div id="signupForm">
-            <input type="email" id="email" placeholder="البريد الإلكتروني أو رقم الهاتف" required>
-            <input type="text" id="name" placeholder="الاسم الكامل" required>
+            <input type="text" id="phoneEmail" placeholder="البريد الإلكتروني أو رقم الهاتف" required>
+            <input type="text" id="fullName" placeholder="الاسم الكامل" required>
             <input type="password" id="password" placeholder="كلمة المرور" required>
             <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور" required>
             <button onclick="register()">تسجيل</button>
-            <p id="successMessage">تم تسجيل حسابك بنجاح!</p>
-            <a href="#" onclick="showLoginForm()">لديك حساب؟ تسجيل الدخول هنا</a>
+            <p id="successMessage" style="display: none;">تم تسجيل حسابك بنجاح!</p>
+            <a href="#" onclick="showLoginForm()">لديك حساب بالفعل؟ تسجيل الدخول هنا</a>
         </div>
 
+        <!-- نموذج تسجيل الدخول -->
         <div id="loginForm" style="display: none;">
-            <input type="email" id="loginEmail" placeholder="البريد الإلكتروني أو رقم الهاتف" required>
+            <input type="text" id="loginPhoneEmail" placeholder="البريد الإلكتروني أو رقم الهاتف" required>
             <input type="password" id="loginPassword" placeholder="كلمة المرور" required>
             <button onclick="login()">تسجيل الدخول</button>
             <a href="#" onclick="showSignupForm()">ليس لديك حساب؟ قم بالتسجيل هنا</a>
         </div>
 
+        <!-- واجهة المحفظة -->
         <div id="wallet" style="display: none;">
             <h3>المحفظة الخاصة بك</h3>
             <div class="wallet-info">
                 <p>عنوان المحفظة: <span id="walletAddress">0x1234abcd5678efgh</span></p>
-                <p>الرصيد: <span id="balance">1000 TRX</span> ($50)</p>
+                <p>الرصيد: <span id="balance">1000 TRX ($300)</span></p>
                 <p>الأصول: TRX, USDT, USDD</p>
             </div>
 
@@ -181,21 +158,24 @@
         const usersDatabase = JSON.parse(localStorage.getItem('users')) || [];
         let currentUser = null;
 
+        // إظهار نموذج التسجيل
         function showSignupForm() {
             document.getElementById('signupForm').style.display = 'block';
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('pageTitle').innerText = 'تسجيل حساب جديد';
         }
 
+        // إظهار نموذج تسجيل الدخول
         function showLoginForm() {
             document.getElementById('signupForm').style.display = 'none';
             document.getElementById('loginForm').style.display = 'block';
             document.getElementById('pageTitle').innerText = 'تسجيل الدخول';
         }
 
+        // معالجة تسجيل الحساب
         function register() {
-            const email = document.getElementById('email').value;
-            const name = document.getElementById('name').value;
+            const phoneEmail = document.getElementById('phoneEmail').value;
+            const fullName = document.getElementById('fullName').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
@@ -204,7 +184,7 @@
                 return;
             }
 
-            usersDatabase.push({ email, name, password });
+            usersDatabase.push({ phoneEmail, fullName, password });
             localStorage.setItem('users', JSON.stringify(usersDatabase));
 
             document.getElementById('successMessage').style.display = 'block';
@@ -213,11 +193,12 @@
             }, 2000);
         }
 
+        // معالجة تسجيل الدخول
         function login() {
-            const email = document.getElementById('loginEmail').value;
+            const phoneEmail = document.getElementById('loginPhoneEmail').value;
             const password = document.getElementById('loginPassword').value;
 
-            currentUser = usersDatabase.find(user => user.email === email && user.password === password);
+            currentUser = usersDatabase.find(user => user.phoneEmail === phoneEmail && user.password === password);
 
             if (currentUser) {
                 showWallet();
@@ -226,12 +207,14 @@
             }
         }
 
+        // إظهار واجهة المحفظة بعد تسجيل الدخول
         function showWallet() {
             document.getElementById('signupForm').style.display = 'none';
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('wallet').style.display = 'block';
         }
 
+        // وظائف إرسال واستلام الأموال
         function sendFunds() {
             const recipientAddress = prompt("أدخل عنوان المحفظة المستقبلية:");
             const amount = prompt("أدخل المبلغ:");
@@ -243,6 +226,7 @@
             alert("تم استلام الأموال بنجاح!");
         }
 
+        // عرض تبويبات
         function viewAssets() {
             alert("عرض الأصول");
         }
@@ -260,4 +244,5 @@
         }
     </script>
 </body>
+
 </html>
