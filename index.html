@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محفظة TRX المتكاملة</title>
+    <title>نظام محفظة TRX المتكاملة - النسخة الكاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -12,6 +12,7 @@
             --success: #28a745;
             --danger: #dc3545;
             --warning: #ffc107;
+            --info: #17a2b8;
             --dark: #2d2d2d;
             --light: #f8f9fa;
             --radius: 15px;
@@ -90,6 +91,16 @@
 
         .btn-danger {
             background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-info {
+            background: var(--info);
             color: white;
         }
 
@@ -190,11 +201,90 @@
             justify-content: space-between;
             align-items: center;
         }
+
+        .price-change {
+            font-size: 14px;
+        }
+
+        .up {
+            color: var(--success);
+        }
+
+        .down {
+            color: var(--danger);
+        }
+
+        .admin-card {
+            background: linear-gradient(45deg, var(--dark), #424242);
+            color: white;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid #444;
+        }
+
+        .admin-table th {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .market-trend {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .market-trend.up {
+            color: var(--success);
+        }
+
+        .market-trend.down {
+            color: var(--danger);
+        }
+
+        .notification-item {
+            background: white;
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification-icon {
+            font-size: 20px;
+        }
+
+        .notification-icon.received {
+            color: var(--success);
+        }
+
+        .notification-icon.sent {
+            color: var(--danger);
+        }
     </style>
 </head>
 <body>
-    <!-- صفحات النظام -->
-    <div class="container page" id="loginPage">
+    <!-- صفحة دخول الأدمن -->
+    <div class="container page" id="adminLoginPage">
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 20px;">دخول المسؤول</h2>
+            <input type="password" class="input-field" placeholder="كلمة المرور الإدارية" id="adminPassword">
+            <button class="btn btn-primary" onclick="adminLogin()">دخول</button>
+            <p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showPage('loginPage')">العودة لتسجيل المستخدم</p>
+        </div>
+    </div>
+
+    <!-- صفحة تسجيل الدخول -->
+    <div class="container page active" id="loginPage">
         <div class="card">
             <h2 style="text-align: center; margin-bottom: 20px;">تسجيل الدخول</h2>
             <input type="text" class="input-field" placeholder="البريد الإلكتروني أو رقم الهاتف" id="loginId">
@@ -204,6 +294,7 @@
         </div>
     </div>
 
+    <!-- صفحة التسجيل -->
     <div class="container page" id="registerPage">
         <div class="card">
             <h2 style="text-align: center; margin-bottom: 20px;">إنشاء حساب جديد</h2>
@@ -217,6 +308,7 @@
         </div>
     </div>
 
+    <!-- صفحة المحفظة الرئيسية -->
     <div class="container page" id="walletPage">
         <div class="card">
             <div style="text-align: center;">
@@ -243,8 +335,8 @@
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
                 <button class="btn btn-primary" onclick="showPage('sendPage')">إرسال</button>
                 <button class="btn btn-success" onclick="showPage('receivePage')">استلام</button>
-                <button class="btn btn-primary" onclick="showPage('votePage')">تصويت</button>
-                <button class="btn btn-success" onclick="stakeFunds()">Stake</button>
+                <button class="btn btn-warning" onclick="showPage('votePage')">تصويت</button>
+                <button class="btn btn-info" onclick="showPage('stakePage')">Stake</button>
             </div>
 
             <div style="margin-top: 20px;">
@@ -254,6 +346,7 @@
         </div>
     </div>
 
+    <!-- صفحة الإرسال -->
     <div class="container page" id="sendPage">
         <div class="card">
             <h2 style="text-align: center; margin-bottom: 20px;">إرسال أموال</h2>
@@ -261,6 +354,11 @@
                 <option value="TRX">TRX</option>
                 <option value="USDT">USDT</option>
                 <option value="USDD">USDD</option>
+                <option value="BTC">Bitcoin</option>
+                <option value="ETH">Ethereum</option>
+                <option value="BNB">BNB</option>
+                <option value="XRP">XRP</option>
+                <option value="DOGE">Dogecoin</option>
             </select>
             <input type="text" class="input-field" placeholder="عنوان المحفظة المستقبلة" id="receiverAddress">
             <input type="number" class="input-field" placeholder="المبلغ" id="sendAmount">
@@ -269,6 +367,7 @@
         </div>
     </div>
 
+    <!-- صفحة الاستلام -->
     <div class="container page" id="receivePage">
         <div class="card">
             <h2 style="text-align: center; margin-bottom: 20px;">استلام أموال</h2>
@@ -283,6 +382,7 @@
         </div>
     </div>
 
+    <!-- صفحة الحركات المالية -->
     <div class="container page" id="transactionsPage">
         <div class="card">
             <h2 style="text-align: center;">سجل المعاملات</h2>
@@ -296,6 +396,7 @@
         </div>
     </div>
 
+    <!-- صفحة الملف الشخصي -->
     <div class="container page" id="profilePage">
         <div class="card">
             <h2 style="text-align: center;">الملف الشخصي</h2>
@@ -324,6 +425,7 @@
         </div>
     </div>
 
+    <!-- صفحة التصويت -->
     <div class="container page" id="votePage">
         <div class="card">
             <h2 style="text-align: center;">نظام التصويت</h2>
@@ -332,6 +434,98 @@
         </div>
     </div>
 
+    <!-- صفحة الـ Stake -->
+    <div class="container page" id="stakePage">
+        <div class="card">
+            <h2 style="text-align: center;">نظام Staking</h2>
+            <div class="asset-list">
+                <div class="asset-item">
+                    <div>TRX Staking</div>
+                    <button class="btn btn-primary" onclick="stakeTRX()">Stake TRX</button>
+                </div>
+                <div class="asset-item">
+                    <div>USDT Staking</div>
+                    <button class="btn btn-success" onclick="stakeUSDT()">Stake USDT</button>
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <h4>رصيد الـ Stake</h4>
+                <div class="asset-list" id="stakedAssets"></div>
+            </div>
+            <p style="text-align: center; margin-top: 15px; cursor: pointer;" onclick="showPage('walletPage')">رجوع</p>
+        </div>
+    </div>
+
+    <!-- صفحة الأدمن -->
+    <div class="container page" id="adminPage">
+        <div class="card admin-card">
+            <h2 style="text-align: center; margin-bottom: 20px;">لوحة التحكم الإدارية</h2>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <small>إجمالي المستخدمين</small>
+                    <h3 id="totalUsers">0</h3>
+                </div>
+                <div class="stat-item">
+                    <small>إجمالي المعاملات</small>
+                    <h3 id="totalTransactions">0</h3>
+                </div>
+                <div class="stat-item">
+                    <small>إجمالي TRX</small>
+                    <h3 id="totalTRX">0</h3>
+                </div>
+                <div class="stat-item">
+                    <small>إجمالي USDT</small>
+                    <h3 id="totalUSDT">0</h3>
+                </div>
+            </div>
+
+            <h3 style="margin: 20px 0 10px;">أحدث المعاملات</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>من</th>
+                        <th>إلى</th>
+                        <th>المبلغ</th>
+                        <th>التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTransactionsList"></tbody>
+            </table>
+
+            <h3 style="margin: 20px 0 10px;">إرسال أموال كمسؤول</h3>
+            <select class="input-field" id="adminCurrency">
+                <option value="TRX">TRX</option>
+                <option value="USDT">USDT</option>
+                <option value="USDD">USDD</option>
+                <option value="BTC">Bitcoin</option>
+                <option value="ETH">Ethereum</option>
+                <option value="BNB">BNB</option>
+                <option value="XRP">XRP</option>
+                <option value="DOGE">Dogecoin</option>
+            </select>
+            <input type="text" class="input-field" placeholder="عنوان المحفظة المستقبلة" id="adminReceiver">
+            <input type="number" class="input-field" placeholder="المبلغ" id="adminAmount">
+            <button class="btn btn-success" onclick="adminSendFunds()">إرسال</button>
+
+            <h3 style="margin: 20px 0 10px;">إدارة المستخدمين</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>المحفظة</th>
+                        <th>TRX</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="adminUsersList"></tbody>
+            </table>
+
+            <button class="btn btn-danger" style="margin-top: 20px;" onclick="logoutAdmin()">تسجيل خروج المسؤول</button>
+        </div>
+    </div>
+
+    <!-- تبويبات التنقل -->
     <div class="nav-tabs">
         <div class="tab-item active" onclick="showPage('walletPage')"><i class="fas fa-home"></i></div>
         <div class="tab-item" onclick="showPage('transactionsPage')"><i class="fas fa-exchange-alt"></i></div>
@@ -340,24 +534,58 @@
     </div>
 
     <script>
+        // بيانات النظام
         let currentUser = null;
-        const users = JSON.parse(localStorage.getItem('users')) || [];
-        const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let stakings = JSON.parse(localStorage.getItem('stakings')) || [];
+        let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+        
+        // بيانات ��لعملات
+        const currencies = {
+            TRX: { name: "TRON", price: 0.07, change: getRandomChange(), balance: 10000 },
+            USDT: { name: "Tether", price: 1.00, change: getRandomChange(), balance: 10000 },
+            USDD: { name: "USDD", price: 1.00, change: getRandomChange(), balance: 10000 },
+            BTC: { name: "Bitcoin", price: 37000, change: getRandomChange(), balance: 10000 },
+            ETH: { name: "Ethereum", price: 2000, change: getRandomChange(), balance: 10000 },
+            BNB: { name: "BNB", price: 250, change: getRandomChange(), balance: 10000 },
+            XRP: { name: "XRP", price: 0.6, change: getRandomChange(), balance: 10000 },
+            DOGE: { name: "Dogecoin", price: 0.08, change: getRandomChange(), balance: 10000 }
+        };
+
+        // بيانات المرشحين للتصويت
         const candidates = [
-            { id: 1, name: 'مرشح 1', votes: 0 },
-            { id: 2, name: 'مرشح 2', votes: 0 },
-            { id: 3, name: 'مرشح 3', votes: 0 }
+            { id: 1, name: 'Super Representative 1', votes: 0 },
+            { id: 2, name: 'Super Representative 2', votes: 0 },
+            { id: 3, name: 'Super Representative 3', votes: 0 },
+            { id: 4, name: 'Super Representative 4', votes: 0 }
         ];
+
+        // توليد تغير عشوائي للأسعار
+        function getRandomChange() {
+            return (Math.random() * 10 - 5).toFixed(2);
+        }
+
+        // تحديث تغيرات الأسعار كل 10 ثواني
+        setInterval(() => {
+            Object.keys(currencies).forEach(currency => {
+                currencies[currency].change = getRandomChange();
+            });
+            if(currentUser) updateAssetsList();
+        }, 10000);
 
         // إدارة الصفحات
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             updateNavTabs(pageId);
+            
             if(pageId === 'walletPage') updateWalletDisplay();
             if(pageId === 'transactionsPage') loadTransactions();
             if(pageId === 'profilePage') updateProfile();
             if(pageId === 'votePage') loadCandidates();
+            if(pageId === 'stakePage') loadStakedAssets();
+            if(pageId === 'adminPage') updateAdminDashboard();
         }
 
         function updateNavTabs(activePage) {
@@ -373,18 +601,28 @@
 
         // نظام المستخدمين
         function register() {
+            const name = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if(password !== confirmPassword) return alert("كلمات المرور غير متطابقة!");
+            if(users.some(u => u.email === email)) return alert("البريد الإلكتروني مسجل بالفعل!");
+
             const user = {
                 id: Date.now(),
-                name: document.getElementById('fullName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                password: document.getElementById('password').value,
+                name,
+                email,
+                phone,
+                password,
                 walletAddress: 'TRX' + Math.random().toString(36).substr(2, 9).toUpperCase(),
                 balance: { TRX: 1000, USDT: 0, USDD: 0 },
                 energy: 350,
                 bandwidth: 500,
                 transactions: [],
-                notifications: []
+                notifications: [],
+                staked: {}
             };
 
             users.push(user);
@@ -417,44 +655,65 @@
             showPage('loginPage');
         }
 
-        // إدارة المحفظة
+        // نظام المحفظة
         function updateWalletDisplay() {
             document.getElementById('userName').textContent = currentUser.name;
             document.getElementById('walletAddress').textContent = currentUser.walletAddress;
-            document.getElementById('balanceTRX').textContent = `${currentUser.balance.TRX} TRX`;
-            document.getElementById('balanceUSD').textContent = `$${(currentUser.balance.TRX * 0.07).toFixed(2)}`;
+            document.getElementById('balanceTRX').textContent = `${currentUser.balance.TRX || 0} TRX`;
+            document.getElementById('balanceUSD').textContent = `$${((currentUser.balance.TRX || 0) * currencies.TRX.price).toFixed(2)}`;
             document.getElementById('receiveAddress').textContent = currentUser.walletAddress;
-            document.getElementById('energyValue').textContent = currentUser.energy;
-            document.getElementById('bandwidthValue').textContent = currentUser.bandwidth;
+            document.getElementById('energyValue').textContent = currentUser.energy || 0;
+            document.getElementById('bandwidthValue').textContent = currentUser.bandwidth || 0;
             
-            // تحديث قائمة الأصول
+            updateAssetsList();
+        }
+
+        function updateAssetsList() {
             const assetsList = document.getElementById('assetsList');
             assetsList.innerHTML = '';
+            
             Object.entries(currentUser.balance).forEach(([currency, balance]) => {
-                assetsList.innerHTML += `
-                    <div class="asset-item">
-                        <div>${currency}</div>
-                        <div>${balance}</div>
-                    </div>
-                `;
+                if(balance > 0 && currencies[currency]) {
+                    const change = currencies[currency].change;
+                    const changeClass = change >= 0 ? 'up' : 'down';
+                    const changeIcon = change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                    
+                    assetsList.innerHTML += `
+                        <div class="asset-item" onclick="showAssetDetails('${currency}')">
+                            <div>
+                                ${currency} - ${currencies[currency].name}
+                                <div class="market-trend ${changeClass}">
+                                    <i class="fas ${changeIcon}"></i> ${Math.abs(change)}%
+                                </div>
+                            </div>
+                            <div>
+                                ${balance.toFixed(6)}
+                                <div class="price-change">
+                                    $${(balance * currencies[currency].price).toFixed(2)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
             });
         }
 
         // نظام التحويلات
-        async function sendFunds() {
+        function sendFunds() {
             const receiverAddress = document.getElementById('receiverAddress').value;
             const amount = parseFloat(document.getElementById('sendAmount').value);
             const currency = document.getElementById('sendCurrency').value;
 
-            if(!receiverAddress || !amount) return alert('الرجاء ملء جميع الحقول');
+            if(!receiverAddress || !amount) return alert("الرجاء ملء جميع الحقول");
+            if(amount <= 0) return alert("المبلغ يجب أن يكون أكبر من الصفر");
 
             const receiver = users.find(u => u.walletAddress === receiverAddress);
-            
-            if(!receiver) return alert('عنوان المحفظة غير صحيح');
-            if(currentUser.balance[currency] < amount) return alert('الرصيد غير كافي');
+            if(!receiver) return alert("عنوان المحفظة غير صحيح");
+            if(!currentUser.balance[currency] || currentUser.balance[currency] < amount) return alert("الرصيد غير كافي");
 
             // إجراء التحويل
             currentUser.balance[currency] -= amount;
+            if(!receiver.balance[currency]) receiver.balance[currency] = 0;
             receiver.balance[currency] += amount;
 
             // تسجيل المعاملة
@@ -479,16 +738,17 @@
             // حفظ التحديثات
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('transactions', JSON.stringify(transactions));
+            localStorage.setItem('notifications', JSON.stringify(notifications));
             
             alert(`تم إرسال ${amount} ${currency} بنجاح!`);
             showPage('walletPage');
             updateWalletDisplay();
-            loadTransactions();
         }
 
         function createNotification(user, type, amount, currency, address) {
             const notification = {
                 id: Date.now(),
+                userId: user.id,
                 type,
                 amount,
                 currency,
@@ -496,7 +756,8 @@
                 date: new Date().toISOString(),
                 read: false
             };
-            user.notifications.push(notification);
+            notifications.push(notification);
+            user.notifications.push(notification.id);
         }
 
         // نظام المعاملات
@@ -509,17 +770,23 @@
                 (filter === 'all' || 
                 (filter === 'sent' && t.from === currentUser.walletAddress) ||
                 (filter === 'received' && t.to === currentUser.walletAddress))
-            );
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if(userTransactions.length === 0) {
+                container.innerHTML = '<p style="text-align: center;">لا توجد معاملات</p>';
+                return;
+            }
 
             userTransactions.forEach(t => {
                 const isSent = t.from === currentUser.walletAddress;
                 container.innerHTML += `
                     <div class="transaction-item">
                         <div>
-                            <i class="fas fa-${isSent ? 'arrow-up' : 'arrow-down'}"></i>
+                            <i class="fas fa-${isSent ? 'arrow-up' : 'arrow-down'}" 
+                               style="color: ${isSent ? 'var(--danger)' : 'var(--success)'}"></i>
                             ${isSent ? 'إرسال إلى' : 'استلام من'}
                             <br>
-                            <small>${t.date}</small>
+                            <small>${new Date(t.date).toLocaleString()}</small>
                         </div>
                         <div style="color: ${isSent ? 'var(--danger)' : 'var(--success)'}">
                             ${isSent ? '-' : '+'}${t.amount} ${t.currency}
@@ -529,12 +796,16 @@
             });
         }
 
+        function filterTransactions(type) {
+            loadTransactions(type);
+        }
+
         // نظام التصويت
         function loadCandidates() {
             const list = document.getElementById('candidatesList');
             list.innerHTML = candidates.map(candidate => `
                 <div class="vote-item">
-                    <div>${candidate.name}</div>
+                    <div>${candidate.name} (${candidate.votes} أصوات)</div>
                     <button class="btn btn-primary" onclick="voteForCandidate(${candidate.id})">
                         تصويت (10 TRX)
                     </button>
@@ -546,10 +817,79 @@
             if(currentUser.balance.TRX < 10) return alert('تحتاج إلى 10 TRX على الأقل للتصويت');
             
             currentUser.balance.TRX -= 10;
-            candidates.find(c => c.id === candidateId).votes++;
+            const candidate = candidates.find(c => c.id === candidateId);
+            candidate.votes++;
+            
+            // تسجيل المعاملة
+            const transaction = {
+                id: Date.now(),
+                from: currentUser.walletAddress,
+                to: "SYSTEM_VOTE",
+                amount: 10,
+                currency: "TRX",
+                date: new Date().toISOString(),
+                status: 'مكتمل'
+            };
+            
+            transactions.push(transaction);
+            currentUser.transactions.push(transaction.id);
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            updateWalletDisplay();
+            loadCandidates();
+            alert('تم التصويت بنجاح!');
+        }
+
+        // نظام Staking
+        function loadStakedAssets() {
+            const container = document.getElementById('stakedAssets');
+            container.innerHTML = '';
+            
+            if(!currentUser.staked || Object.keys(currentUser.staked).length === 0) {
+                container.innerHTML = '<p style="text-align: center;">لا توجد أصول مخزنة</p>';
+                return;
+            }
+            
+            Object.entries(currentUser.staked).forEach(([currency, amount]) => {
+                container.innerHTML += `
+                    <div class="asset-item">
+                        <div>${currency}</div>
+                        <div>${amount}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function stakeTRX() {
+            const amount = parseFloat(prompt("كمية TRX التي تريد تخزينها:", "100"));
+            if(!amount || isNaN(amount) return;
+            if(currentUser.balance.TRX < amount) return alert("الرصيد غير كافي");
+            
+            currentUser.balance.TRX -= amount;
+            if(!currentUser.staked.TRX) currentUser.staked.TRX = 0;
+            currentUser.staked.TRX += amount;
+            
             localStorage.setItem('users', JSON.stringify(users));
             updateWalletDisplay();
-            alert('تم التصويت بنجاح!');
+            loadStakedAssets();
+            alert(`تم تخزين ${amount} TRX بنجاح!`);
+        }
+
+        function stakeUSDT() {
+            const amount = parseFloat(prompt("كمية USDT التي تريد تخزينها:", "100"));
+            if(!amount || isNaN(amount)) return;
+            if(currentUser.balance.USDT < amount) return alert("الرصيد غير كافي");
+            
+            currentUser.balance.USDT -= amount;
+            if(!currentUser.staked.USDT) currentUser.staked.USDT = 0;
+            currentUser.staked.USDT += amount;
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            updateWalletDisplay();
+            loadStakedAssets();
+            alert(`تم تخزين ${amount} USDT بنجاح!`);
         }
 
         // تحديث الملف الشخصي
@@ -567,12 +907,4 @@
                 .filter(t => t.to === currentUser.walletAddress)
                 .reduce((sum, t) => sum + t.amount, 0);
 
-            document.getElementById('totalSent').textContent = totalSent;
-            document.getElementById('totalReceived').textContent = totalReceived;
-        }
-
-        // التهيئة الأولية
-        showPage('loginPage');
-    </script>
-</body>
-            </html>
+            document.getElementById('totalSent').textContent = totalSent.toFixed
